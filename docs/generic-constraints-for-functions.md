@@ -72,11 +72,9 @@ If multiple inhabitance constraints are present, they are separated with commas 
 type f = <A, B with check1<A, B>>(A, B) -> ()
 -- Ok! `T` is a generic of an enclosing function.
 type g = <with check2<T>>(T) -> ()
-type h = <A with check1<A>, with check1<T>>(A, T) -> ()
--- They may appear after type packs.
+type h = <A with check1<A>, check1<T>>(A, T) -> ()
+-- They appear at the end of the generic type list, after generic packs.
 type i = <T, U..., with checkPack<(U...) -> ()>(T, U...) -> ()
--- They may appear before generics they consume.
-type j = <with check1<T>, T>(T) -> ()
 ```
 
 ### Inferred constraints
