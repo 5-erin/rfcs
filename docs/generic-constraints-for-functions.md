@@ -73,6 +73,10 @@ type f = <A, B with check1<A, B>>(A, B) -> ()
 -- Ok! `T` is a generic of an enclosing function.
 type g = <with check2<T>>(T) -> ()
 type h = <A with check1<A>, with check1<T>>(A, T) -> ()
+-- They may appear after type packs.
+type i = <T, U..., with checkPack<(U...) -> ()>(T, U...) -> ()
+-- They may appear before generics they consume.
+type j = <with check1<T>, T>(T) -> ()
 ```
 
 ### Inferred constraints
@@ -108,6 +112,27 @@ end
 The `+=` operation mints an `add<T, T>` type function. This is to be copied into a inhabitance constraint, representing that `T` must support
 `+` with itself, but this is only relevant if the *inner* function is called. Thus, the constraint is applied onto that inner
 function instead of the `counter` function itself.
+
+## Subtyping
+
+Intrinsically, function types which accept more kinds of arguments are subtypes of function types which accept less kinds of arguments.
+
+```luau
+<T>(T) -> T <: <T: string>(T) -> T
+<T>(T) -> T <: <T with add<T, number>>(T) -> T
+```
+
+Additionally, we know from:
+
+```luau
+(unknown) -> unknown </: <T>(T) -> T
+```
+
+, the relation is held:
+
+```luau
+(string) -> string </: <T: string>(T) -> T
+```
 
 ## Prior art
 
